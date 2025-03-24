@@ -26,9 +26,7 @@ def sort_image_files(image_files: List[Path]) -> List[Path]:
         try:
             file_name = filename.name
             match = re.search(r"(\d+)\.jpg$", file_name, re.IGNORECASE)
-            if match:
-                return int(match.group(1))
-            return 0
+            return int(match[1]) if match else 0
         except Exception as e:
             logfire.warning(f"提取文件名数字失败 {filename}: {str(e)}")
             return 0

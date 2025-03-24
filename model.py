@@ -53,8 +53,6 @@ class AlbumInfo(BaseModel):
         tags_str = "、".join(display_tags) if display_tags else "无标签"
         if len(self.tags) > 8:
             tags_str += f"...等{len(self.tags)}个标签"
-        works_str = "、".join(self.works) if self.works else "无关联作品"
-
         info_lines = [
             f"📚 {self.name} [{self.album_id}]",
             f"👤 作者: {authors_str}",
@@ -66,6 +64,8 @@ class AlbumInfo(BaseModel):
         ]
 
         if self.works:
+            works_str = "、".join(self.works) if self.works else "无关联作品"
+
             info_lines.append(f"🔗 系列: {works_str}")
 
         info_lines.append(f"\n💾 发送 /jm {self.album_id} 下载此漫画")
@@ -121,9 +121,9 @@ class SearchResult(BaseModel):
         header = f"🔍 '{self.name}' 的搜索结果 ({self.total}本，第{self.page}/{(self.total+self.limit-1)//self.limit}页)"
         detail_lines = []
 
-        for i, album in enumerate(self.albums, 1):
-            detail_lines.append(f"{i}. {album.brief_meta}")
-
+        detail_lines.extend(
+            f"{i}. {album.brief_meta}" for i, album in enumerate(self.albums, 1)
+        )
         footer = f"\n💡 发送 /jm [ID] 下载指定漫画"
 
         if self.total > len(self.albums):
