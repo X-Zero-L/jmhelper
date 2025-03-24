@@ -57,7 +57,11 @@ def get_album_detail(jmid: str, option: JmOption) -> Optional[AlbumInfo]:
 
 
 def search_albums(
-    keyword: str, option: JmOption, page: int = 1, limit: int | None = None
+    keyword: str,
+    option: JmOption,
+    page: int = 1,
+    limit: int | None = None,
+    retry: int = 3,
 ) -> SearchResult:
     """
     搜索漫画
@@ -80,32 +84,17 @@ def search_albums(
         )
 
         albums_info = []
-        total = 0
 
         # 如果是单个漫画的结果
         if search_page.is_single_album:
             album_detail = search_page.single_album
             albums_info.append(AlbumInfo.from_jm_album(album_detail))
-            total = 1
         # 正常搜索结果
         else:
-            total = (
-                search_page.page_size
-                if hasattr(search_page, "page_size")
-                else len(search_page)
-            )
-
-            # 直接使用搜索结果中的基本信息
-            for album_id, album_data in search_page:
-                try:
-                    # 从搜索结果创建简化版的AlbumInfo对象
-                    album_info = AlbumInfo(
-                        album_id=album_id,
-                        name=album_data,
-                    )
-                    albums_info.append(album_info)
-                except Exception as e:
-                    logfire.warning(f"处理漫画 {album_id} 信息失败: {str(e)}")
+            albums_info = [
+                AlbumInfo(album_id=album_id, name=album_data)
+                for album_id, album_data in search_page
+            ]
 
         search_result = SearchResult(
             query=keyword,
@@ -116,7 +105,14 @@ def search_albums(
             keyword=keyword,
         )
 
-        logfire.info(f"搜索完成: 关键词={keyword}, 找到{total}个结果")
+        if not albums_info and retry > 0:
+            logfire.warning(f"搜索结果为空，重试: {retry}")
+            return search_albums(keyword, option, page, limit, retry - 1)
+
+        logfire.info(
+            f"搜索完成: 关键词={keyword}, 找到{search_result.total}个结果",
+            search_result=search_result,
+        )
         return search_result
     except Exception as e:
         logfire.error(f"搜索漫画失败: {str(e)}", exc_info=True)
