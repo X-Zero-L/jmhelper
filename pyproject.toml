@@ -10,5 +10,7 @@ dependencies = [
     "nonebot-plugin-alconna>=0.55.1",
     "nonebot-plugin-htmlrender>=0.6.0",
     "pillow>=11.1.0",
+    "pypdf2>=3.0.1",
     "pyyaml>=6.0.2",
+    "reportlab>=4.3.1",
 ]

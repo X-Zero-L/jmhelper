@@ -4,6 +4,11 @@ from pathlib import Path
 from typing import List, Optional
 import logfire
 from PIL import Image
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from PyPDF2 import PdfWriter
+import os
+import tempfile
 
 
 def sort_image_files(image_files: List[Path]) -> List[Path]:
@@ -35,7 +40,7 @@ def convert_to_pdf(
     input_folder: str, output_folder: str, pdf_name: str
 ) -> Optional[str]:
     """
-    将文件夹内的JPG图片转换为PDF
+    将文件夹内的JPG图片转换为PDF，使用流式处理避免内存溢出
 
     Args:
         input_folder: 输入文件夹路径
@@ -64,34 +69,43 @@ def convert_to_pdf(
 
         # 排序图片
         image_files = sort_image_files(image_files)
-        logfire.info(f"找到 {len(image_files)} 张图片", image_files=image_files)
+        logfire.info(f"找到 {len(image_files)} 张图片")
 
-        # 打开第一张图片作为基础
-        output = Image.open(image_files[0])
-        if output.mode != "RGB":
-            output = output.convert("RGB")
-
-        # 准备其他图片
-        sources = []
-        for file in image_files[1:]:
-            try:
-                img = Image.open(file)
-                if img.mode != "RGB":
-                    img = img.convert("RGB")
-                sources.append(img)
-            except Exception as e:
-                logfire.error(f"处理图片 {file} 时出错: {str(e)}", _exc_info=True)
-
-        # 保存PDF
+        # 创建最终PDF文件路径
         pdf_file = pdf_path / f"{pdf_name}.pdf"
-        output.save(
-            str(pdf_file),
-            "pdf",
-            save_all=True,
-            append_images=sources,
-            resolution=100.0,
-            quality=85,
-        )
+        
+        # 创建PDF合并器
+        pdf_writer = PdfWriter()
+        
+        # 创建临时目录
+        with tempfile.TemporaryDirectory() as temp_dir:
+            # 逐个处理图片
+            for i, img_path in enumerate(image_files):
+                try:
+                    # 获取图片尺寸
+                    with Image.open(img_path) as img:
+                        width, height = img.size
+                    
+                    # 创建临时PDF
+                    temp_pdf = os.path.join(temp_dir, f"temp_{i}.pdf")
+                    
+                    # 使用reportlab将单个图片转换为PDF
+                    c = canvas.Canvas(temp_pdf, pagesize=(width, height))
+                    c.drawImage(str(img_path), 0, 0, width, height)
+                    c.save()
+                    
+                    # 将临时PDF添加到合并器
+                    pdf_writer.append(temp_pdf)
+                    
+                    if (i + 1) % 10 == 0:
+                        logfire.info(f"已处理 {i + 1}/{len(image_files)} 张图片")
+                        
+                except Exception as e:
+                    logfire.error(f"处理图片 {img_path} 时出错: {str(e)}", _exc_info=True)
+            
+            # 写入最终PDF文件
+            with open(str(pdf_file), "wb") as f:
+                pdf_writer.write(f)
 
         end_time = time.time()
         run_time = end_time - start_time
