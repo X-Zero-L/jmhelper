@@ -9,6 +9,7 @@ dependencies = [
     "jmcomic>=2.5.32",
     "logfire>=3.6.2",
     "nonebot-plugin-alconna>=0.55.1",
+    "nonebot-plugin-apscheduler>=0.5.0",
     "nonebot-plugin-htmlrender>=0.6.0",
     "pillow>=11.1.0",
     "pypdf2>=3.0.1",

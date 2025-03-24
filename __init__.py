@@ -9,9 +9,10 @@ logfire.configure(send_to_logfire="if-token-present", scrubbing=False)
 
 require("nonebot_plugin_alconna")
 require("nonebot_plugin_htmlrender")
+require("nonebot_plugin_apscheduler")
 from nonebot_plugin_alconna import Alconna, Args, on_alconna, Match, UniMessage
 from nonebot.adapters import Bot, Event
-
+from nonebot_plugin_apscheduler import scheduler
 import jmcomic
 import yaml
 from functools import partial
@@ -77,6 +78,21 @@ with open(OPTION_FILE, "r", encoding="utf-8") as f:
     BASE_DIR = option_dict["dir_rule"]["base_dir"]
 
 
+@scheduler.scheduled_job("cron", hour=3)
+async def clean_expired_files():
+    if not config.jm_clear:
+        logfire.info("清理过期文件功能已关闭")
+        return
+    for root, _, files in os.walk(BASE_DIR):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_stat = os.stat(file_path)
+            if file_stat.st_ctime < os.stat(BASE_DIR).st_ctime:
+                os.remove(file_path)
+                logfire.info(f"删除过期文件: {file_path}")
+    logfire.info("清理过期文件完成")
+
+
 async def process_download(jmid: str) -> Tuple[Optional[str], Optional[str]]:
     """
     处理下载和转换任务
@@ -116,6 +132,7 @@ async def process_download(jmid: str) -> Tuple[Optional[str], Optional[str]]:
     else:
         logfire.error(f"PDF文件不存在: {album_pdf}")
         raise Exception("下载失败，请重试")
+
     return album_pdf, album_name
 
 
@@ -129,7 +146,7 @@ async def handle_download(bot: Bot, event: Event, jmid: Match[str]):
 
         if album_pdf and album_name:
             await bot.upload_group_file(
-                group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
+               group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
             )
         else:
             await download_command.send(f"处理 {jmid_value} 失败，请检查日志")
