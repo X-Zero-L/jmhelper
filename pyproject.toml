@@ -1,0 +1,13 @@
+[project]
+name = "jmhelper"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9, <4.0"
+dependencies = [
+    "jmcomic>=2.5.32",
+    "logfire>=3.6.2",
+    "nonebot-plugin-alconna>=0.55.1",
+    "pillow>=11.1.0",
+    "pyyaml>=6.0.2",
+]

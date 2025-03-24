@@ -1,0 +1,5 @@
+jmcomic>=2.5.32
+logfire>=3.6.2
+nonebot-plugin-alconna>=0.55.1
+pillow>=11.1.0
+pyyaml>=6.0.2
