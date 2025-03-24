@@ -25,10 +25,18 @@ from .downloader import download_album, get_album_detail, search_albums
 from .converter import convert_to_pdf
 from .utils import merge_forward
 
+_help_str = """
+JM助手帮助
+/jm [漫画ID] - 下载并转换漫画资源为PDF格式
+/jmt [漫画ID] - 获取漫画详情
+/jms [关键字] - 搜索漫画
+/jmh - JM助手帮助
+""".strip()
+
 __plugin_meta__ = PluginMetadata(
     name="JM助手",
     description="下载并转换漫画资源为PDF格式",
-    usage="/jm [漫画ID]",
+    usage=_help_str,
     config=Config,
 )
 
@@ -67,6 +75,16 @@ search_command = on_alconna(
     aliases={"搜索漫画", "/JM_SEARCH", "/Jm_Search", "/jM_search", "/jms"},
 )
 
+help_command = on_alconna(
+    Alconna(
+        "/jm_help",
+    ),
+    use_cmd_start=True,
+    priority=5,
+    block=True,
+    aliases={"JM助手帮助", "/JM_HELP", "/Jm_Help", "/jM_help", "/jmh"},
+)
+
 thread_pool_executor = concurrent.futures.ThreadPoolExecutor()
 
 PLUGIN_DIR = Path(__file__).parent
@@ -83,6 +101,7 @@ async def clean_expired_files():
     if not config.jm_clear:
         logfire.info("清理过期文件功能已关闭")
         return
+    logfire.info("开始清理过期文件")
     for root, _, files in os.walk(BASE_DIR):
         for file in files:
             file_path = os.path.join(root, file)
@@ -209,3 +228,8 @@ async def handle_search(bot: Bot, event: Event, keyword: Match[str]):
         error_message = f"搜索 {keyword_value} 时出错: {str(e)}"
         logfire.error(error_message, _exc_info=True)
         await search_command.send(error_message)
+
+
+@help_command.handle()
+async def handle_help():
+    await help_command.finish(_help_str)
