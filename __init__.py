@@ -109,12 +109,8 @@ async def handle_download(bot: Bot, event: Event, jmid: Match[str]):
         album_pdf, album_name = await process_download(jmid_value)
 
         if album_pdf and album_name:
-            # await bot.upload_group_file(
-            #    group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
-            # )
-            album_pdf = os.path.relpath(album_pdf, BASE_DIR)
-            await download_command.send(
-                f"转换已完成，请访问https://share.nyanners.moe/jmcomic/{album_pdf}查看"
+            await bot.upload_group_file(
+                group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
             )
         else:
             await download_command.send(f"处理 {jmid_value} 失败，请检查日志")
