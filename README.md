@@ -10,8 +10,8 @@ cd jmhelper
 uv sync
 ```
 
-如果你不知道 uv 是什么，请查看 [uv](https://github.com/astral-sh/uv)
-如果你不想使用 uv，那么你可以使用以下命令
+- 如果你不知道 uv 是什么，请查看 [uv](https://github.com/astral-sh/uv)
+- 如果你不想使用 uv，那么你可以使用以下命令
 
 ```bash
 pip install -r requirements.txt
@@ -53,8 +53,8 @@ dir_rule:
   rule: Bd_Ptitle # 目录结构规则
 ```
 
-其他配置项看 jmcomic 项目的[文档](https://jmcomic.readthedocs.io/zh-cn/latest/)
-如果你使用 docker 部署 nonebot/llonebot/napcat 等，建议这里的下载目录都对等挂载，不然你只能自己修改插件代码了
+- 其他配置项看 jmcomic 项目的[文档](https://jmcomic.readthedocs.io/zh-cn/latest/)
+- 如果你使用 docker 部署 nonebot/llonebot/napcat 等，建议这里的下载目录都对等挂载，不然你只能自己修改插件代码了
 
 ## 使用方法
 
