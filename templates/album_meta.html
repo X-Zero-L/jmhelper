@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ album.name }} - 漫画信息</title>
+    <style>
+        :root {
+            --primary-color: #7659ff;
+            --primary-light: #a29bfe;
+            --primary-dark: #5e48e8;
+            --secondary-color: #ff7eb3;
+            --text-color: #2d3748;
+            --text-light: #718096;
+            --text-lighter: #a0aec0;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --card-border-radius: 0;
+            --shadow: 0 10px 25px rgba(118, 89, 255, 0.07), 0 6px 12px rgba(0, 0, 0, 0.04);
+            --tag-bg: rgba(118, 89, 255, 0.1);
+            --tag-color: var(--primary-dark);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: 'NotoSansSC';
+            src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+        }
+
+        body {
+            font-family: 'NotoSansSC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            padding: 0;
+            margin: 0;
+            line-height: 1.5;
+            width: 100%;
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        html, body {
+            min-height: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            background-color: var(--card-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+            transform: rotate(30deg);
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
+            letter-spacing: -0.01em;
+        }
+
+        .header h1 .id-badge {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-left: 12px;
+            vertical-align: middle;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .header .sub-info {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .header .author-badge {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 5px;
+            margin-bottom: 5px;
+        }
+
+        .content {
+            padding: 40px;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 30px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            width: 120px;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-light);
+            flex-shrink: 0;
+            margin-right: 30px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .emoji {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .info-value {
+            flex: 1;
+            font-size: 18px;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-width: 250px;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--tag-bg);
+            color: var(--tag-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .tag:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 40px;
+            background-color: rgba(240, 242, 245, 0.5);
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            width: 100%;
+        }
+
+        .stat-item {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 16px;
+            color: var(--text-light);
+            background-color: var(--bg-color);
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(118, 89, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(118, 89, 255, 0.3);
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, rgba(0,0,0,0.01), rgba(0,0,0,0.05), rgba(0,0,0,0.01));
+            margin: 25px 0;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 25px;
+            }
+            
+            .content {
+                padding: 25px;
+            }
+            
+            .info-label {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .info-value {
+                width: 100%;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                padding: 25px;
+            }
+            
+            .stat-item {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .header h1 .id-badge {
+                display: block;
+                margin: 10px 0 0 0;
+                width: fit-content;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="emoji">📚</span> {{ album.name }}
+                <span class="id-badge">#{{ album.album_id }}</span>
+            </h1>
+            <div class="sub-info">
+                <span class="emoji">👤</span> 作者:
+                {% if album.authors %}
+                <span class="author-badge">{{ album.authors|join('</span><span class="author-badge">') }}</span>
+                {% else %}
+                <span class="author-badge">未知</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="info-row">
+                <div class="info-label">
+                    <span class="emoji">📅</span> 发布日期
+                </div>
+                <div class="info-value">
+                    {{ album.pub_date }}
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <span class="emoji">🔄</span> 更新日期
+                </div>
+                <div class="info-value">
+                    {{ album.update_date }}
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <span class="emoji">📖</span> 页数信息
+                </div>
+                <div class="info-value">
+                    <strong>{{ album.page_count }}</strong> 页 (共 <strong>{{ album.episode_count }}</strong> 章)
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+
+            <div class="info-row">
+                <div class="info-label">
+                    <span class="emoji">🏷️</span> 标签
+                </div>
+                <div class="info-value">
+                    <div class="tags-container">
+                        {% if album.tags %}
+                        {% for tag in album.tags[:15] %}
+                        <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                        {% if album.tags|length > 15 %}
+                        <span class="tag">+{{ album.tags|length - 15 }}</span>
+                        {% endif %}
+                        {% else %}
+                        <span class="tag">无标签</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if album.works %}
+            <div class="info-row">
+                <div class="info-label">
+                    <span class="emoji">🔗</span> 系列作品
+                </div>
+                <div class="info-value">
+                    <div class="tags-container">
+                        {% for work in album.works %}
+                        <span class="tag">{{ work }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value">{{ album.views }}</div>
+                <div class="stat-label">浏览量</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ album.likes }}</div>
+                <div class="stat-label">喜欢</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ album.comment_count }}</div>
+                <div class="stat-label">评论</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>使用指令下载此漫画</span>
+            <a href="#" class="download-btn">/jm {{ album.album_id }}</a>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -8,8 +8,8 @@ from nonebot.plugin import PluginMetadata
 logfire.configure(send_to_logfire="if-token-present", scrubbing=False)
 
 require("nonebot_plugin_alconna")
-
-from nonebot_plugin_alconna import Alconna, Args, on_alconna, Match
+require("nonebot_plugin_htmlrender")
+from nonebot_plugin_alconna import Alconna, Args, on_alconna, Match, UniMessage
 from nonebot.adapters import Bot, Event
 
 import jmcomic
@@ -20,8 +20,9 @@ import concurrent.futures
 import os
 
 from .config import Config
-from .downloader import download_album
+from .downloader import download_album, get_album_detail
 from .converter import convert_to_pdf
+from .utils import merge_forward
 
 __plugin_meta__ = PluginMetadata(
     name="JM助手",
@@ -41,6 +42,17 @@ download_command = on_alconna(
     priority=5,
     block=True,
     aliases={"下载漫画", "下载本子", "/JM", "/Jm", "/jM"},
+)
+
+meta_command = on_alconna(
+    Alconna(
+        "/jm_meta",
+        Args["jmid", str],
+    ),
+    use_cmd_start=True,
+    priority=5,
+    block=True,
+    aliases={"获取漫画详情", "/JM_META", "/Jm_Meta", "/jM_meta", "/jmt"},
 )
 
 thread_pool_executor = concurrent.futures.ThreadPoolExecutor()
@@ -97,8 +109,12 @@ async def handle_download(bot: Bot, event: Event, jmid: Match[str]):
         album_pdf, album_name = await process_download(jmid_value)
 
         if album_pdf and album_name:
-            await bot.upload_group_file(
-                group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
+            # await bot.upload_group_file(
+            #    group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
+            # )
+            album_pdf = os.path.relpath(album_pdf, BASE_DIR)
+            await download_command.send(
+                f"转换已完成，请访问https://share.nyanners.moe/jmcomic/{album_pdf}查看"
             )
         else:
             await download_command.send(f"处理 {jmid_value} 失败，请检查日志")
@@ -107,3 +123,30 @@ async def handle_download(bot: Bot, event: Event, jmid: Match[str]):
         error_message = f"处理 {jmid_value} 时出错: {str(e)}"
         logfire.error(error_message, exc_info=True)
         await download_command.send(error_message)
+
+
+@meta_command.handle()
+async def handle_meta(bot: Bot, event: Event, jmid: Match[str]):
+    jmid_value = jmid.result
+    await meta_command.send(f"正在获取 {jmid_value} 详情，请稍等...")
+
+    try:
+        album_info = await asyncio.get_event_loop().run_in_executor(
+            thread_pool_executor, partial(get_album_detail, jmid_value, option)
+        )
+
+        if album_info:
+            await meta_command.send(
+                await merge_forward(
+                    [await album_info.meta_img],
+                    uid=event.user_id,
+                    name=f"{jmid_value}详情",
+                )
+            )
+        else:
+            await meta_command.send(f"获取 {jmid_value} 详情失败，请检查日志")
+
+    except Exception as e:
+        error_message = f"获取 {jmid_value} 详情时出错: {str(e)}"
+        logfire.error(error_message, exc_info=True)
+        await meta_command.send(error_message)

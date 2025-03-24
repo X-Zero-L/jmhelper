@@ -1,3 +1,4 @@
+from nonebot_plugin_alconna import CustomNode, Reference, UniMessage
 import yaml
 from pathlib import Path
 from typing import Dict, Any
@@ -32,3 +33,16 @@ def format_file_size(size_bytes: int) -> str:
             return f"{size_bytes:.2f} {unit}"
         size_bytes /= 1024.0
     return f"{size_bytes:.2f} TB"
+
+
+async def merge_forward(msgs: list, uid: str, name: str) -> Reference:
+    return Reference(
+        nodes=[
+            CustomNode(
+                uid=uid,
+                content=UniMessage(msg),
+                name=name,
+            )
+            for msg in msgs
+        ]
+    )
