@@ -106,6 +106,16 @@ async def process_download(jmid: str) -> Tuple[Optional[str], Optional[str]]:
         partial(convert_to_pdf, album_dir, BASE_DIR, f"{jmid}"),
     )
     """
+    # 检查文件大小，判断是否转换成功
+    if os.path.exists(album_pdf):
+        file_size = os.path.getsize(album_pdf)
+        if file_size < 1024 * 1024:
+            logfire.error(f"PDF文件过小: {file_size}")
+            os.remove(album_pdf)
+            raise Exception("下载失败，请重试")
+    else:
+        logfire.error(f"PDF文件不存在: {album_pdf}")
+        raise Exception("下载失败，请重试")
     return album_pdf, album_name
 
 
@@ -119,7 +129,7 @@ async def handle_download(bot: Bot, event: Event, jmid: Match[str]):
 
         if album_pdf and album_name:
             await bot.upload_group_file(
-               group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
+                group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
             )
         else:
             await download_command.send(f"处理 {jmid_value} 失败，请检查日志")
