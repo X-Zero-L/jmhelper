@@ -9,7 +9,13 @@
 ![漫画元信息查询效果图1](/docs/screenshot/jmt1.png)
 ![漫画元信息查询效果图2](/docs/screenshot/jmt2.png)
 
+## 漫画搜索
+
+![漫画搜索效果图](/docs/screenshot/jms1.png)
+![漫画搜索效果图](/docs/screenshot/jms2.png)
+
 ### 漫画下载
+
 ![漫画下载效果图](/docs/screenshot/jm1.png)
 
 ## 安装方法
@@ -81,7 +87,7 @@ plugins:
       kwargs:
         pdf_dir: /your/path/to/download # pdf存放文件夹，和dir_rule.base_dir保持一致
         filename_rule: Pid # pdf命名规则，P代表photo, id代表使用photo.id也就是章节id
-  
+
   after_album:
     # img2pdf也支持合并整个本子，把上方的after_photo改为after_album即可。
     # https://github.com/hect0x7/JMComic-Crawler-Python/discussions/258
@@ -99,17 +105,17 @@ plugins:
 
 插件注册了以下指令：
 
-- `/jm [漫画ID]` - 下载并转换指定 ID 的漫画
+- `/jm [漫画ID]` - 下载并转换指定 ID 的漫画，上传 PDF 文件
 - `/jmt [漫画ID]` - 查看指定 ID 的漫画元信息，如标题、作者、标签等
+- `/jms [关键词]` - 搜索漫画，返回搜索结果
 
 示例：
 
 ```
 /jm 123456
 /jmt 123456
+/jms genshin
 ```
-
-机器人将下载漫画并转换为 PDF，完成后会在群文件中上传 PDF 文件。
 
 ## 注意事项
 

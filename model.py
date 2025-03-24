@@ -105,28 +105,34 @@ class AlbumInfo(BaseModel):
 
         return f"📚 {self.name} [{self.album_id}]\n👤 {authors_str} | 📖 {self.page_count}页 | 🏷️ {tags_preview}"
 
+    # id:name
+    @property
+    def id_name(self) -> str:
+        return f"{self.album_id}:{self.name}"
+
 
 class SearchResult(BaseModel):
     """搜索结果模型"""
 
+    query: str = Field("", description="搜索关键词")
     total: int = Field(0, description="总结果数")
     albums: List[AlbumInfo] = Field(
         default_factory=list, description="搜索到的漫画列表"
     )
     page: int = Field(1, description="当前页码")
-    limit: int = Field(10, description="每页结果数")
+    limit: int | None = Field(None, description="每页结果数")
     keyword: str = Field("", description="搜索关键词")
 
     def format_search_results(self) -> str:
-        header = f"🔍 '{self.name}' 的搜索结果 ({self.total}本，第{self.page}/{(self.total+self.limit-1)//self.limit}页)"
         detail_lines = []
 
         detail_lines.extend(
-            f"{i}. {album.brief_meta}" for i, album in enumerate(self.albums, 1)
+            f"{i}. {album.id_name}" for i, album in enumerate(self.albums, start=1)
         )
         footer = f"\n💡 发送 /jm [ID] 下载指定漫画"
 
-        if self.total > len(self.albums):
-            footer += f"\n📄 发送 /jmsearch {self.keyword} {self.page+1} 查看下一页"
+        return "\n\n".join(detail_lines) + footer
 
-        return header + "\n\n" + "\n\n".join(detail_lines) + footer
+    @property
+    def str(self) -> str:
+        return self.format_search_results()

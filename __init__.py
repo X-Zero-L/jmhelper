@@ -20,7 +20,7 @@ import concurrent.futures
 import os
 
 from .config import Config
-from .downloader import download_album, get_album_detail
+from .downloader import download_album, get_album_detail, search_albums
 from .converter import convert_to_pdf
 from .utils import merge_forward
 
@@ -55,6 +55,17 @@ meta_command = on_alconna(
     aliases={"获取漫画详情", "/JM_META", "/Jm_Meta", "/jM_meta", "/jmt"},
 )
 
+search_command = on_alconna(
+    Alconna(
+        "/jm_search",
+        Args["keyword", str],
+    ),
+    use_cmd_start=True,
+    priority=5,
+    block=True,
+    aliases={"搜索漫画", "/JM_SEARCH", "/Jm_Search", "/jM_search", "/jms"},
+)
+
 thread_pool_executor = concurrent.futures.ThreadPoolExecutor()
 
 PLUGIN_DIR = Path(__file__).parent
@@ -76,6 +87,7 @@ async def process_download(jmid: str) -> Tuple[Optional[str], Optional[str]]:
     Returns:
         Tuple[Optional[str], Optional[str]]: (PDF文件路径, 漫画名称)或错误情况下的(None, None)
     """
+
     album_pdf = os.path.join(BASE_DIR, f"{jmid}.pdf")
     if os.path.exists(album_pdf):
         logfire.info(f"PDF已存在: {album_pdf}")
@@ -143,3 +155,30 @@ async def handle_meta(bot: Bot, event: Event, jmid: Match[str]):
         error_message = f"获取 {jmid_value} 详情时出错: {str(e)}"
         logfire.error(error_message, _exc_info=True)
         await meta_command.send(error_message)
+
+
+@search_command.handle()
+async def handle_search(bot: Bot, event: Event, keyword: Match[str]):
+    keyword_value = keyword.result
+    await search_command.send(f"正在搜索 {keyword_value}，请稍等...")
+
+    try:
+        search_result = await asyncio.get_event_loop().run_in_executor(
+            thread_pool_executor, partial(search_albums, keyword_value, option)
+        )
+
+        if search_result:
+            await search_command.send(
+                await merge_forward(
+                    [search_result.str],
+                    uid=event.user_id,
+                    name=f"{keyword_value}搜索结果",
+                )
+            )
+        else:
+            await search_command.send(f"搜索 {keyword_value} 失败，请检查日志")
+
+    except Exception as e:
+        error_message = f"搜索 {keyword_value} 时出错: {str(e)}"
+        logfire.error(error_message, _exc_info=True)
+        await search_command.send(error_message)
