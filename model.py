@@ -5,6 +5,7 @@ from jmcomic import JmAlbumDetail
 from nonebot_plugin_alconna import Image as AlconnaImage
 from nonebot_plugin_htmlrender import template_to_pic
 from pathlib import Path
+import logfire
 
 TEMPLATE_DIR = Path(os.path.dirname(os.path.abspath(__file__))) / "templates"
 
@@ -89,8 +90,6 @@ class AlbumInfo(BaseModel):
 
             return AlconnaImage(raw=pic_bytes)
         except Exception as e:
-            import logfire
-
             logfire.error(f"生成漫画信息图片失败: {str(e)}", exc_info=True)
             return self.meta
 
