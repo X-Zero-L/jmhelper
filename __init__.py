@@ -142,6 +142,8 @@ async def process_download(jmid: str) -> Tuple[Optional[str], Optional[str]]:
         partial(convert_to_pdf, album_dir, BASE_DIR, f"{jmid}"),
     )
     """
+    album_id = album.id
+    album_pdf = os.path.join(BASE_DIR, f"{album_id}.pdf")
     # 检查文件大小，判断是否转换成功
     if os.path.exists(album_pdf):
         file_size = os.path.getsize(album_pdf)
