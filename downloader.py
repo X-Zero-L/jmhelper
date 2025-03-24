@@ -104,7 +104,6 @@ def search_albums(
                         name=album_data,
                     )
                     albums_info.append(album_info)
-                    count += 1
                 except Exception as e:
                     logfire.warning(f"处理漫画 {album_id} 信息失败: {str(e)}")
 
