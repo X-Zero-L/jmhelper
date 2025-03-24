@@ -76,29 +76,25 @@ async def process_download(jmid: str) -> Tuple[Optional[str], Optional[str]]:
     Returns:
         Tuple[Optional[str], Optional[str]]: (PDF文件路径, 漫画名称)或错误情况下的(None, None)
     """
-    try:
-        album_pdf = os.path.join(BASE_DIR, f"{jmid}.pdf")
-        if os.path.exists(album_pdf):
-            logfire.info(f"PDF已存在: {album_pdf}")
-            return album_pdf, jmid
+    album_pdf = os.path.join(BASE_DIR, f"{jmid}.pdf")
+    if os.path.exists(album_pdf):
+        logfire.info(f"PDF已存在: {album_pdf}")
+        return album_pdf, jmid
 
-        album, _ = await asyncio.get_event_loop().run_in_executor(
-            thread_pool_executor, partial(download_album, jmid, option)
-        )
+    album, _ = await asyncio.get_event_loop().run_in_executor(
+        thread_pool_executor, partial(download_album, jmid, option)
+    )
 
-        album_name = album.name
-        # 使用自带的插件，不再手动下载
-        """
-        album_dir = os.path.join(BASE_DIR, album_name)
-        pdf_path = await asyncio.get_event_loop().run_in_executor(
-            thread_pool_executor,
-            partial(convert_to_pdf, album_dir, BASE_DIR, f"{jmid}"),
-        )
-        """
-        return album_pdf, album_name
-    except Exception as e:
-        logfire.error(f"处理漫画 {jmid} 失败: {str(e)}", exc_info=True)
-        return None, None
+    album_name = album.name
+    # 使用自带的插件，不再手动转换
+    """
+    album_dir = os.path.join(BASE_DIR, album_name)
+    pdf_path = await asyncio.get_event_loop().run_in_executor(
+        thread_pool_executor,
+        partial(convert_to_pdf, album_dir, BASE_DIR, f"{jmid}"),
+    )
+    """
+    return album_pdf, album_name
 
 
 @download_command.handle()
