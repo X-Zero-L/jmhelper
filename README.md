@@ -2,6 +2,16 @@
 
 适用于 NoneBot2 的 JM 插件，支持下载并转换为 PDF 格式，支持查看漫画元信息。
 
+## 效果展示
+
+### 漫画元信息查询
+
+![漫画元信息查询效果图1](/docs/screenshot/jmt1.png)
+![漫画元信息查询效果图2](/docs/screenshot/jmt2.png)
+
+### 漫画下载
+![漫画下载效果图](/docs/screenshot/jm1.png)
+
 ## 安装方法
 
 ```bash
