@@ -96,10 +96,7 @@ def search_albums(
             )
 
             # 直接使用搜索结果中的基本信息
-            count = 0
             for album_id, album_data in search_page:
-                if limit and count >= limit:
-                    break
                 try:
                     # 从搜索结果创建简化版的AlbumInfo对象
                     album_info = AlbumInfo(
@@ -113,7 +110,7 @@ def search_albums(
 
         search_result = SearchResult(
             query=keyword,
-            total=total,
+            total=len(albums_info),
             albums=albums_info,
             page=page,
             limit=limit,
