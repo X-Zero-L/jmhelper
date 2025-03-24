@@ -22,7 +22,7 @@ def download_album(jmid: str, option: JmOption) -> Tuple[Any, Any]:
         logfire.info(f"漫画 {jmid} 下载完成，名称: {album.name}")
         return album, dler
     except Exception as e:
-        logfire.error(f"下载漫画 {jmid} 失败: {str(e)}", exc_info=True)
+        logfire.error(f"下载漫画 {jmid} 失败: {str(e)}", _exc_info=True)
         raise Exception(f"下载失败: {str(e)}") from e
 
 
@@ -52,5 +52,5 @@ def get_album_detail(jmid: str, option: JmOption) -> Optional[AlbumInfo]:
         )
         return album_info
     except Exception as e:
-        logfire.error(f"获取漫画 {jmid} 详情失败: {str(e)}", exc_info=True)
+        logfire.error(f"获取漫画 {jmid} 详情失败: {str(e)}", _exc_info=True)
         return None

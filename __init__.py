@@ -114,7 +114,7 @@ async def handle_download(bot: Bot, event: Event, jmid: Match[str]):
 
     except Exception as e:
         error_message = f"处理 {jmid_value} 时出错: {str(e)}"
-        logfire.error(error_message, exc_info=True)
+        logfire.error(error_message, _exc_info=True)
         await download_command.send(error_message)
 
 
@@ -141,5 +141,5 @@ async def handle_meta(bot: Bot, event: Event, jmid: Match[str]):
 
     except Exception as e:
         error_message = f"获取 {jmid_value} 详情时出错: {str(e)}"
-        logfire.error(error_message, exc_info=True)
+        logfire.error(error_message, _exc_info=True)
         await meta_command.send(error_message)

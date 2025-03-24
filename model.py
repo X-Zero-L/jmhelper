@@ -90,7 +90,7 @@ class AlbumInfo(BaseModel):
 
             return AlconnaImage(raw=pic_bytes)
         except Exception as e:
-            logfire.error(f"生成漫画信息图片失败: {str(e)}", exc_info=True)
+            logfire.error(f"生成漫画信息图片失败: {str(e)}", _exc_info=True)
             return self.meta
 
     @property
