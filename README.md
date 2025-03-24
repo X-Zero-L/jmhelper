@@ -48,7 +48,7 @@ cp option.example.yml option.yml
 2. 编辑`option.yml`文件，修改以下关键配置：
 
 - `client.postman.meta_data.proxies`: 设置代理（必须，不然可能无法访问）
-- `dir_rule.base_dir`: 设置下载和 PDF 输出的根目录
+- `dir_rule.base_dir`: 设置下载和 PDF 输出的根目录, 注意和`pdf_dir`保持一致
 
 主要配置项解释：
 
@@ -71,6 +71,25 @@ download:
 dir_rule:
   base_dir: /your/path/to/download # 下载根目录，必须修改
   rule: Bd_Ptitle # 目录结构规则
+
+# 插件的配置示例
+plugins:
+  after_photo:
+    # 把章节的所有图片合并为一个pdf的插件
+    # 使用前需要安装依赖库: [pip install img2pdf]
+    - plugin: img2pdf
+      kwargs:
+        pdf_dir: /your/path/to/download # pdf存放文件夹，和dir_rule.base_dir保持一致
+        filename_rule: Pid # pdf命名规则，P代表photo, id代表使用photo.id也就是章节id
+  
+  after_album:
+    # img2pdf也支持合并整个本子，把上方的after_photo改为after_album即可。
+    # https://github.com/hect0x7/JMComic-Crawler-Python/discussions/258
+    # 配置到after_album时，需要修改filename_rule参数，不能写Pxx只能写Axx示例如下
+    - plugin: img2pdf
+      kwargs:
+        pdf_dir: /your/path/to/download # pdf存放文件夹，和dir_rule.base_dir保持一致
+        filename_rule: Aid # pdf命名规则，A代表album, id代表使用album.id也就是本子id
 ```
 
 - 配置项详情请看 jmcomic 项目的[文档](https://jmcomic.readthedocs.io/zh-cn/latest/)

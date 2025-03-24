@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.9, <4.0"
 dependencies = [
+    "img2pdf>=0.6.0",
     "jmcomic>=2.5.32",
     "logfire>=3.6.2",
     "nonebot-plugin-alconna>=0.55.1",

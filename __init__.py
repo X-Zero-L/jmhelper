@@ -87,14 +87,15 @@ async def process_download(jmid: str) -> Tuple[Optional[str], Optional[str]]:
         )
 
         album_name = album.name
+        # 使用自带的插件，不再手动下载
+        """
         album_dir = os.path.join(BASE_DIR, album_name)
-
         pdf_path = await asyncio.get_event_loop().run_in_executor(
             thread_pool_executor,
             partial(convert_to_pdf, album_dir, BASE_DIR, f"{jmid}"),
         )
-
-        return pdf_path, jmid
+        """
+        return album_pdf, album_name
     except Exception as e:
         logfire.error(f"处理漫画 {jmid} 失败: {str(e)}", exc_info=True)
         return None, None
@@ -110,7 +111,7 @@ async def handle_download(bot: Bot, event: Event, jmid: Match[str]):
 
         if album_pdf and album_name:
             await bot.upload_group_file(
-                group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
+               group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
             )
         else:
             await download_command.send(f"处理 {jmid_value} 失败，请检查日志")
