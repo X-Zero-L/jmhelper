@@ -29,7 +29,7 @@ _help_str = """
 JM助手帮助
 /jm [漫画ID] - 下载并转换漫画资源为PDF格式
 /jmt [漫画ID] - 获取漫画详情
-/jms [关键字] - 搜索漫画
+/jms [关键字] [页数] - 搜索漫画, 默认第一页
 /jmh - JM助手帮助
 """.strip()
 
@@ -68,6 +68,7 @@ search_command = on_alconna(
     Alconna(
         "/jm_search",
         Args["keyword", str],
+        Args["page?", int],
     ),
     use_cmd_start=True,
     priority=5,
@@ -165,7 +166,7 @@ async def handle_download(bot: Bot, event: Event, jmid: Match[str]):
 
         if album_pdf and album_name:
             await bot.upload_group_file(
-               group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
+                group_id=event.group_id, file=album_pdf, name=f"{album_name}.pdf"
             )
         else:
             await download_command.send(f"处理 {jmid_value} 失败，请检查日志")
@@ -204,13 +205,14 @@ async def handle_meta(bot: Bot, event: Event, jmid: Match[str]):
 
 
 @search_command.handle()
-async def handle_search(bot: Bot, event: Event, keyword: Match[str]):
+async def handle_search(bot: Bot, event: Event, keyword: Match[str], page: Match[int]):
     keyword_value = keyword.result
     await search_command.send(f"正在搜索 {keyword_value}，请稍等...")
-
+    page_value = page.result if page.available else 1
     try:
         search_result = await asyncio.get_event_loop().run_in_executor(
-            thread_pool_executor, partial(search_albums, keyword_value, option)
+            thread_pool_executor,
+            partial(search_albums, keyword_value, option, page_value),
         )
 
         if search_result:

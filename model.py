@@ -130,6 +130,7 @@ class SearchResult(BaseModel):
             f"{i}. {album.id_name}" for i, album in enumerate(self.albums, start=1)
         )
         footer = f"\n💡 发送 /jm [ID] 下载指定漫画"
+        footer += f"\n🔍 发送 /jms {self.query} {self.page+1} 搜索下一页"
 
         return "\n\n".join(detail_lines) + footer
 

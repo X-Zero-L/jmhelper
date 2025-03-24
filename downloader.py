@@ -112,7 +112,12 @@ def search_albums(
                     logfire.warning(f"处理漫画 {album_id} 信息失败: {str(e)}")
 
         search_result = SearchResult(
-            total=total, albums=albums_info, page=page, limit=limit, keyword=keyword
+            query=keyword,
+            total=total,
+            albums=albums_info,
+            page=page,
+            limit=limit,
+            keyword=keyword,
         )
 
         logfire.info(f"搜索完成: 关键词={keyword}, 找到{total}个结果")
