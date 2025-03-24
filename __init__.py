@@ -218,7 +218,7 @@ async def handle_search(bot: Bot, event: Event, keyword: Match[str], page: Match
         if search_result:
             await search_command.send(
                 await merge_forward(
-                    [search_result.str],
+                    [await search_result.meta_img],
                     uid=event.user_id,
                     name=f"{keyword_value}搜索结果",
                 )

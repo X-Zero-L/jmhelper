@@ -137,3 +137,24 @@ class SearchResult(BaseModel):
     @property
     def str(self) -> str:
         return self.format_search_results()
+
+    @property
+    async def meta_img(self) -> Union[AlconnaImage, str]:
+        """
+        生成搜索结果的图片版本
+
+        Returns:
+            Union[AlconnaImage, str]: 成功时返回AlconnaImage对象，失败时返回文本版本
+        """
+        try:
+            pic_bytes = await template_to_pic(
+                template_path=str(TEMPLATE_DIR),
+                template_name="search_result.html",
+                templates={"search": self.model_dump()},
+                pages={"viewport": {"width": 720, "height": 1}},
+            )
+
+            return AlconnaImage(raw=pic_bytes)
+        except Exception as e:
+            logfire.error(f"生成搜索结果图片失败: {str(e)}", _exc_info=True)
+            return self.format_search_results()

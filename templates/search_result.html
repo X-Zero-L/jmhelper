@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+        }
+        .subtitle {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        .result-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .result-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eaeaea;
+            transition: background-color 0.2s;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-item:hover {
+            background-color: #f9f9f9;
+        }
+        .album-id {
+            display: inline-block;
+            background-color: #5c6bc0;
+            color: white;
+            border-radius: 4px;
+            padding: 3px 6px;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+        .album-name {
+            font-weight: 600;
+        }
+        .footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eaeaea;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .tip {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .tip-icon {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        .page-info {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">搜索结果</h1>
+            <p class="subtitle">关键词: "{{ search.query }}" - 共找到 {{ search.total }} 个结果</p>
+        </div>
+        
+        <ul class="result-list">
+            {% for album in search.albums %}
+            <li class="result-item">
+                <span class="album-id">{{ album.album_id }}</span>
+                <span class="album-name">{{ album.name }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        
+        <div class="footer">
+            <div class="tip">
+                <span class="tip-icon">💡</span>
+                <span>发送 /jm [ID] 下载指定漫画</span>
+            </div>
+            <div class="tip">
+                <span class="tip-icon">🔍</span>
+                <span>发送 /jms {{ search.query }} {{ search.page + 1 }} 搜索下一页</span>
+            </div>
+        </div>
+        
+        <div class="page-info">
+            第 {{ search.page }} 页 {% if search.limit %}· 每页 {{ search.limit }} 条{% endif %}
+        </div>
+    </div>
+</body>
+</html>
