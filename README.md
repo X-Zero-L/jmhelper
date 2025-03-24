@@ -8,6 +8,12 @@
 git clone https://github.com/X-Zero-L/jmhelper.git
 ```
 
+或者使用 git 子模块
+
+```bash
+git submodule add https://github.com/X-Zero-L/jmhelper.git path/to/plugins/jmhelper
+```
+
 - 如果你使用 uv, 请使用以下命令
 
 ```bash
