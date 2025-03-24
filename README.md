@@ -78,6 +78,7 @@ dir_rule:
 3. 部分敏感内容需要在`option.yml`中配置 cookies 才能下载
 4. 请合理使用，避免频繁请求造成服务器压力
 5. 虽然本插件使用了`nonebot_plugin_alconna`,但是文件上传接口使用的是 onebot11 的，所以不支持其他协议 😀
+6. 如果你需要日志记录，请看[logfire](logfire.pydantic.dev)
 
 ## 目录结构
 
