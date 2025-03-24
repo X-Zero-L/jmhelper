@@ -64,7 +64,7 @@ dir_rule:
 ```
 
 - 配置项详情请看 jmcomic 项目的[文档](https://jmcomic.readthedocs.io/zh-cn/latest/)
-- 如果你使用 docker 部署 nonebot/llonebot/napcat 等，建议这里的下载目录都对等挂载，不然你只能自己修改插件代码了🤭
+- 如果你使用 docker 部署 nonebot/llonebot/napcat 等，建议这里的下载目录都对等挂载，不然你只能自己修改插件代码了 🤭
 
 ## 使用方法
 
