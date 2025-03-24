@@ -17,7 +17,7 @@ git submodule add https://github.com/X-Zero-L/jmhelper.git path/to/plugins/jmhel
 - 如果你使用 uv, 请使用以下命令
 
 ```bash
-uv add -r path/to/jmhelper/requirements.txt
+uv add -r path/to/plugins/jmhelper/requirements.txt
 ```
 
 - 如果你不知道 uv 是什么，请查看 [uv](https://github.com/astral-sh/uv)
