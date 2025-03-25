@@ -101,6 +101,7 @@ plugins:
 - 配置项详情请看 jmcomic 项目的[文档](https://jmcomic.readthedocs.io/zh-cn/latest/)
 - 如果你使用 docker 部署 nonebot/llonebot/napcat 等，建议这里的下载目录都对等挂载，不然你只能自己修改插件代码了 🤭
 - 本插件每天凌晨 3 点会清理今天之前的下载文件，所以请保证您输入的下载目录仅用于 jm 资源的下载，如果您不希望清理文件，请在环境变量中设置`JM_CLEAN=False`
+- 由于渲染图片时会用到漫画对应的封面图，如果你无法正常访问对应地址，或速度较慢，请在环境变量设置`htmlrender_proxy_host`,具体看[nonebot-plugin-htmlrender](https://github.com/kexue-z/nonebot-plugin-htmlrender)
 
 ## 使用方法
 
