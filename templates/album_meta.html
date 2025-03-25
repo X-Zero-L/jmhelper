@@ -16,7 +16,7 @@
             --text-lighter: #a0aec0;
             --bg-color: #f8f9fa;
             --card-bg: #ffffff;
-            --card-border-radius: 0;
+            --card-border-radius: 12px;
             --shadow: 0 10px 25px rgba(118, 89, 255, 0.07), 0 6px 12px rgba(0, 0, 0, 0.04);
             --tag-bg: rgba(118, 89, 255, 0.1);
             --tag-color: var(--primary-dark);
@@ -28,145 +28,262 @@
             box-sizing: border-box;
         }
 
-        @font-face {
-            font-family: 'NotoSansSC';
-            src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
-        }
-
         body {
             font-family: 'NotoSansSC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background-color: var(--card-bg);
+            background-color: var(--bg-color);
             color: var(--text-color);
             padding: 0;
             margin: 0;
             line-height: 1.5;
             width: 100%;
-            height: 100%;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        html, body {
+        html,
+        body {
             min-height: 100%;
             overflow-x: hidden;
         }
 
         .container {
             width: 100%;
-            max-width: 100%;
-            margin: 0;
-            background-color: var(--card-bg);
-            min-height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
             display: flex;
             flex-direction: column;
+            gap: 30px;
         }
 
-        .header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 30px 40px;
+        /* 主要内容区域 */
+        .main-content {
+            display: grid;
+            grid-template-columns: minmax(300px, 1fr) 2fr;
+            gap: 40px;
+            padding: 0;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 封面区域 */
+        .cover-section {
+            position: sticky;
+            top: 20px;
+            align-self: flex-start;
+        }
+
+        .album-cover-container {
             position: relative;
+            border-radius: var(--card-border-radius);
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+            background-color: var(--card-bg);
         }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
-            transform: rotate(30deg);
-            z-index: 1;
+        .album-cover-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
 
-        .header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 2;
-            letter-spacing: -0.01em;
+        .album-cover {
+            width: 100%;
+            display: block;
+            aspect-ratio: 2/3;
+            object-fit: cover;
+            transition: transform 0.5s ease;
         }
 
-        .header h1 .id-badge {
-            display: inline-block;
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 4px 14px;
-            border-radius: 12px;
-            font-size: 16px;
-            margin-left: 12px;
-            vertical-align: middle;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
+        .album-cover:hover {
+            transform: scale(1.03);
         }
 
-        .header .sub-info {
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.9);
-            position: relative;
-            z-index: 2;
+        .download-btn {
             display: flex;
             align-items: center;
-            gap: 5px;
-            flex-wrap: wrap;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            border-radius: var(--card-border-radius);
+            font-size: 18px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(118, 89, 255, 0.3);
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: 20px;
         }
 
-        .header .author-badge {
-            background-color: rgba(255, 255, 255, 0.15);
-            padding: 5px 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            display: inline-flex;
-            align-items: center;
-            margin-left: 5px;
+        .download-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(118, 89, 255, 0.4);
+        }
+
+        /* 统计信息卡片 */
+        .stats-card {
+            background-color: var(--card-bg);
+            border-radius: var(--card-border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+        }
+
+        .stat-item {
+            padding: 20px 10px;
+            text-align: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            position: relative;
+        }
+
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background-color: rgba(0, 0, 0, 0.07);
+        }
+
+        .stat-item:hover {
+            background-color: rgba(118, 89, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary-color);
             margin-bottom: 5px;
         }
 
-        .content {
-            padding: 40px;
-            flex: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
         }
 
-        .info-row {
-            display: flex;
+        /* 信息区域 */
+        .info-section {
+            background-color: var(--card-bg);
+            border-radius: var(--card-border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .album-header {
             margin-bottom: 30px;
-            align-items: flex-start;
-            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+            padding-bottom: 20px;
         }
 
-        .info-row:last-child {
-            margin-bottom: 0;
+        .album-title {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .id-badge {
+            display: inline-block;
+            background-color: rgba(118, 89, 255, 0.1);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .authors-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .author-badge {
+            background-color: var(--tag-bg);
+            color: var(--primary-color);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .author-badge:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .info-label {
-            width: 120px;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 500;
             color: var(--text-light);
-            flex-shrink: 0;
-            margin-right: 30px;
-            margin-bottom: 10px;
             display: flex;
             align-items: center;
-        }
-
-        .emoji {
-            margin-right: 10px;
-            font-size: 20px;
+            gap: 8px;
         }
 
         .info-value {
-            flex: 1;
-            font-size: 18px;
+            font-size: 16px;
             color: var(--text-color);
-            line-height: 1.6;
-            min-width: 250px;
+            font-weight: 500;
+        }
+
+        .emoji {
+            font-size: 18px;
+        }
+
+        .tags-section {
+            margin-top: 30px;
+            border-top: 1px solid rgba(0, 0, 0, 0.07);
+            padding-top: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .tags-container {
@@ -182,7 +299,7 @@
             color: var(--tag-color);
             padding: 8px 16px;
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 500;
             transition: all 0.2s ease;
         }
@@ -193,118 +310,54 @@
             transform: translateY(-2px);
         }
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            padding: 40px;
-            background-color: rgba(240, 242, 245, 0.5);
-            border-top: 1px solid rgba(0, 0, 0, 0.04);
-            width: 100%;
-        }
-
-        .stat-item {
-            background-color: white;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            transition: transform 0.2s ease;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 16px;
-            color: var(--text-light);
-        }
-
         .footer {
             text-align: center;
-            padding: 30px;
-            font-size: 16px;
+            padding: 30px 0;
+            font-size: 14px;
             color: var(--text-light);
-            background-color: var(--bg-color);
-            border-top: 1px solid rgba(0, 0, 0, 0.04);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 500;
-            text-decoration: none;
-            box-shadow: 0 4px 8px rgba(118, 89, 255, 0.2);
-            transition: all 0.2s ease;
-        }
-
-        .download-btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(118, 89, 255, 0.3);
-        }
-        
-        .divider {
-            height: 1px;
-            background: linear-gradient(to right, rgba(0,0,0,0.01), rgba(0,0,0,0.05), rgba(0,0,0,0.01));
-            margin: 25px 0;
-            width: 100%;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
         }
 
         @media (max-width: 768px) {
-            .header {
-                padding: 25px;
+            .container {
+                padding: 15px;
             }
-            
-            .content {
-                padding: 25px;
+
+            .main-content {
+                gap: 25px;
             }
-            
-            .info-label {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-            
-            .info-value {
-                width: 100%;
-            }
-            
-            .stats {
-                grid-template-columns: 1fr;
-                padding: 25px;
-            }
-            
-            .stat-item {
+
+            .info-section {
                 padding: 20px;
             }
-            
-            .header h1 {
+
+            .album-title {
                 font-size: 24px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
             }
-            
-            .header h1 .id-badge {
-                display: block;
-                margin: 10px 0 0 0;
-                width: fit-content;
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-item::after {
+                display: none;
+            }
+
+            .stat-item {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+            }
+
+            .stat-item:last-child {
+                border-bottom: none;
             }
         }
     </style>
@@ -312,56 +365,95 @@
 
 <body>
     <div class="container">
-        <div class="header">
-            <h1>
-                <span class="emoji">📚</span> {{ album.name }}
-                <span class="id-badge">#{{ album.album_id }}</span>
-            </h1>
-            <div class="sub-info">
-                <span class="emoji">👤</span> 作者:
-                {% if album.authors %}
-                <span class="author-badge">{{ album.authors|join('</span><span class="author-badge">') }}</span>
-                {% else %}
-                <span class="author-badge">未知</span>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="content">
-            <div class="info-row">
-                <div class="info-label">
-                    <span class="emoji">📅</span> 发布日期
+        <div class="main-content">
+            <!-- 封面区域 -->
+            <div class="cover-section">
+                <div class="album-cover-container">
+                    <img class="album-cover" src="{{ album.cover }}" alt="{{ album.name }} 封面">
                 </div>
-                <div class="info-value">
-                    {{ album.pub_date }}
+                
+                <div class="stats-card">
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">{{ album.views }}</div>
+                            <div class="stat-label">浏览量</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ album.likes }}</div>
+                            <div class="stat-label">喜欢</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">{{ album.comment_count }}</div>
+                            <div class="stat-label">评论</div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <div class="info-row">
-                <div class="info-label">
-                    <span class="emoji">🔄</span> 更新日期
-                </div>
-                <div class="info-value">
-                    {{ album.update_date }}
-                </div>
+                
+                <a href="#" class="download-btn">/jm {{ album.album_id }}</a>
             </div>
 
-            <div class="info-row">
-                <div class="info-label">
-                    <span class="emoji">📖</span> 页数信息
+            <!-- 信息区域 -->
+            <div class="info-section">
+                <div class="album-header">
+                    <div class="album-title">
+                        {{ album.name }}
+                        <span class="id-badge">#{{ album.album_id }}</span>
+                    </div>
+                    
+                    <div class="authors-container">
+                        <span class="info-label"><span class="emoji">👤</span> 作者:</span>
+                        {% if album.authors %}
+                        {% for author in album.authors %}
+                        <span class="author-badge">{{ author }}</span>
+                        {% endfor %}
+                        {% else %}
+                        <span class="author-badge">未知</span>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="info-value">
-                    <strong>{{ album.page_count }}</strong> 页 (共 <strong>{{ album.episode_count }}</strong> 章)
-                </div>
-            </div>
-            
-            <div class="divider"></div>
 
-            <div class="info-row">
-                <div class="info-label">
-                    <span class="emoji">🏷️</span> 标签
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="emoji">📅</span> 发布日期
+                        </div>
+                        <div class="info-value">
+                            {{ album.pub_date }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="emoji">🔄</span> 更新日期
+                        </div>
+                        <div class="info-value">
+                            {{ album.update_date }}
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="emoji">📖</span> 页数
+                        </div>
+                        <div class="info-value">
+                            {{ album.page_count }} 页
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">
+                            <span class="emoji">📚</span> 章节数
+                        </div>
+                        <div class="info-value">
+                            {{ album.episode_count }} 章
+                        </div>
+                    </div>
                 </div>
-                <div class="info-value">
+
+                <div class="tags-section">
+                    <div class="section-title">
+                        <span class="emoji">🏷️</span> 标签
+                    </div>
                     <div class="tags-container">
                         {% if album.tags %}
                         {% for tag in album.tags[:15] %}
@@ -375,42 +467,20 @@
                         {% endif %}
                     </div>
                 </div>
-            </div>
 
-            {% if album.works %}
-            <div class="info-row">
-                <div class="info-label">
-                    <span class="emoji">🔗</span> 系列作品
-                </div>
-                <div class="info-value">
+                {% if album.works %}
+                <div class="tags-section">
+                    <div class="section-title">
+                        <span class="emoji">🔗</span> 系列作品
+                    </div>
                     <div class="tags-container">
                         {% for work in album.works %}
                         <span class="tag">{{ work }}</span>
                         {% endfor %}
                     </div>
                 </div>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
-
-        <div class="stats">
-            <div class="stat-item">
-                <div class="stat-value">{{ album.views }}</div>
-                <div class="stat-label">浏览量</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ album.likes }}</div>
-                <div class="stat-label">喜欢</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-value">{{ album.comment_count }}</div>
-                <div class="stat-label">评论</div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <span>使用指令下载此漫画</span>
-            <a href="#" class="download-btn">/jm {{ album.album_id }}</a>
         </div>
     </div>
 </body>

@@ -1,7 +1,7 @@
 import os
 from pydantic import BaseModel, Field
 from typing import Tuple, Any, List, Optional, Union
-from jmcomic import JmAlbumDetail
+from jmcomic import JmAlbumDetail, JmModuleConfig
 from nonebot_plugin_alconna import Image as AlconnaImage
 from nonebot_plugin_htmlrender import template_to_pic
 from pathlib import Path
@@ -13,6 +13,7 @@ TEMPLATE_DIR = Path(os.path.dirname(os.path.abspath(__file__))) / "templates"
 class AlbumInfo(BaseModel):
     """漫画信息模型"""
 
+    cover: str = Field("", description="封面图片链接")
     album_id: str = Field(..., description="漫画ID")
     name: str = Field(..., description="漫画名称")
     author: str = Field("", description="主要作者")
@@ -31,6 +32,7 @@ class AlbumInfo(BaseModel):
     def from_jm_album(cls, album: JmAlbumDetail) -> "AlbumInfo":
         """从JmAlbumDetail对象创建AlbumInfo模型"""
         return cls(
+            cover=f"https://{JmModuleConfig.DOMAIN_IMAGE_LIST[0]}/media/albums/{album.album_id}.jpg",
             album_id=album.album_id,
             name=album.name,
             author=album.author,
@@ -85,7 +87,9 @@ class AlbumInfo(BaseModel):
                 template_path=str(TEMPLATE_DIR),
                 template_name="album_meta.html",
                 templates={"album": self.model_dump()},
-                pages={"viewport": {"width": 720, "height": 1}},
+                pages={
+                    "viewport": {"width": 1100, "height": 500},
+                },
             )
 
             return AlconnaImage(raw=pic_bytes)
