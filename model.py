@@ -151,11 +151,19 @@ class SearchResult(BaseModel):
             Union[AlconnaImage, str]: 成功时返回AlconnaImage对象，失败时返回文本版本
         """
         try:
+            [
+                setattr(
+                    album,
+                    "cover",
+                    f"https://{JmModuleConfig.DOMAIN_IMAGE_LIST[0]}/media/albums/{album.album_id}.jpg",
+                )
+                for album in self.albums
+            ]
             pic_bytes = await template_to_pic(
                 template_path=str(TEMPLATE_DIR),
                 template_name="search_result.html",
                 templates={"search": self.model_dump()},
-                pages={"viewport": {"width": 720, "height": 1}},
+                pages={"viewport": {"width": 1280, "height": 1}},
             )
 
             return AlconnaImage(raw=pic_bytes)
