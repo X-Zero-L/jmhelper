@@ -31,7 +31,11 @@ git submodule add https://github.com/X-Zero-L/jmhelper.git path/to/plugins/jmhel
 ```
 
 - 如果你使用 uv, 请使用以下命令
-
+  
+```bash
+uv add path/to/plugins/jmhelper
+```
+或者
 ```bash
 uv add -r path/to/plugins/jmhelper/requirements.txt
 ```
